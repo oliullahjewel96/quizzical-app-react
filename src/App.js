@@ -14,23 +14,36 @@ function App() {
             return {
               ...question,
               id: nanoid(),
-              answers: [...question.incorrect_answers, question.correct_answer],
-              isSelected: false,
+              answers: shuffle([
+                ...question.incorrect_answers,
+                question.correct_answer,
+              ]),
+              correctAnswer: question.correct_answer,
             };
           })
         )
       );
   }, []);
 
-  function handleSelect(id, isSelected) {
-    setQuizData((prevQuestions) =>
-      prevQuestions.map((question) => {
-        console.log(question);
-        return question.id === id
-          ? { ...question, isSelected: !isSelected }
-          : question;
-      })
-    );
+  function shuffle(arr) {
+    let array = arr.map((ans) => {
+      return {
+        id: nanoid(),
+        answer: ans,
+        isSelected: false,
+      };
+    });
+    for (let i = array.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      let temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+    return array;
+  }
+
+  function handleSelect(id, selectedAnsId) {
+    console.log(id, selectedAnsId);
   }
 
   const newQuizData = QuizData.map((question) => {
