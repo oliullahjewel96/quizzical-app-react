@@ -1,10 +1,6 @@
 import React from "react";
-import { nanoid } from "nanoid";
+
 const Quiz = (props) => {
-  console.log(props);
-  const styles = {
-    backgroundColor: props.isSelected ? "#d6dbf5" : "transparent",
-  };
   return (
     <>
       <div className="questions">
@@ -14,8 +10,9 @@ const Quiz = (props) => {
             return (
               <h6
                 key={answer.id}
-                className="correct"
-                style={styles}
+                className={`${
+                  answer.isSelected ? "isSelected" : "transparent"
+                }`}
                 onClick={() => props.handleSelect(props.id, answer.id)}
               >
                 {answer.answer}{" "}

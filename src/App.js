@@ -3,7 +3,7 @@ import Quiz from "./components/Quiz";
 import { nanoid } from "nanoid";
 function App() {
   const [showScreen, setShowScreen] = useState(false);
-  const [QuizData, setQuizData] = useState([]);
+  const [quizData, setQuizData] = useState([]);
 
   useEffect(() => {
     fetch("https://opentdb.com/api.php?amount=5&category=21&type=multiple")
@@ -18,7 +18,7 @@ function App() {
                 ...question.incorrect_answers,
                 question.correct_answer,
               ]),
-              correctAnswer: question.correct_answer,
+              correct_answer: question.correct_answer,
             };
           })
         )
@@ -43,17 +43,32 @@ function App() {
   }
 
   function handleSelect(id, selectedAnsId) {
-    console.log(id, selectedAnsId);
+    setQuizData((prevQuizData) => {
+      return prevQuizData.map((question) => {
+        return question.id === id
+          ? {
+              ...question,
+              answers: question.answers.map((answer) => {
+                return answer.id === selectedAnsId
+                  ? {
+                      ...answer,
+                      isSelected: !answer.isSelected,
+                    }
+                  : { ...answer, isSelected: false };
+              }),
+            }
+          : question;
+      });
+    });
   }
 
-  const newQuizData = QuizData.map((question) => {
+  const newQuizData = quizData.map((question) => {
     return (
       <Quiz
         key={question.id}
         id={question.id}
         question={question.question}
         answers={question.answers}
-        isSelected={question.isSelected}
         handleSelect={handleSelect}
       />
     );
