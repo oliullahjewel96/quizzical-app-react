@@ -4,6 +4,8 @@ import { nanoid } from "nanoid";
 function App() {
   const [showScreen, setShowScreen] = useState(false);
   const [quizData, setQuizData] = useState([]);
+  const [count, setCount] = useState(0);
+  const [displayResult, setDisplayResult] = useState(false);
 
   useEffect(() => {
     fetch("https://opentdb.com/api.php?amount=5&category=21&type=multiple")
@@ -19,11 +21,12 @@ function App() {
                 question.correct_answer,
               ]),
               correct_answer: question.correct_answer,
+              checkAnswers: false,
             };
           })
         )
       );
-  }, []);
+  }, [showScreen]);
 
   function shuffle(arr) {
     let array = arr.map((ans) => {
@@ -56,10 +59,23 @@ function App() {
                     }
                   : { ...answer, isSelected: false };
               }),
+              checkAnswers:
+                question.correct_answer ===
+                question.answers.find((answer) => answer.id === selectedAnsId)
+                  .answer
+                  ? true
+                  : false,
             }
           : question;
       });
     });
+  }
+
+  function checkAnswers() {
+    const correctAnswers = quizData.filter((question) => question.checkAnswers);
+    setCount(correctAnswers.length);
+
+    setDisplayResult(true);
   }
 
   const newQuizData = quizData.map((question) => {
@@ -70,9 +86,32 @@ function App() {
         question={question.question}
         answers={question.answers}
         handleSelect={handleSelect}
+        correct_answer={question.correct_answer}
+        checkAnswers={question.checkAnswers}
+        displayResult={displayResult}
       />
     );
   });
+
+  function playAgain() {
+    setShowScreen(false);
+    setDisplayResult(false);
+    setCount(0);
+    setQuizData((prevQuizData) =>
+      prevQuizData.map((question) => {
+        return {
+          ...question,
+          answers: question.answers.map((answer) => {
+            return {
+              ...answer,
+              isSelected: false,
+            };
+          }),
+          checkAnswers: false,
+        };
+      })
+    );
+  }
 
   function openSeparateScreen() {
     setShowScreen((prevShowScreen) => !prevShowScreen);
@@ -91,9 +130,18 @@ function App() {
               margin: "auto",
             }}
             className="btn"
+            onClick={checkAnswers}
           >
             Check answers
           </button>
+          {displayResult && (
+            <div className="count">
+              <p>You scored {count} / 5 correct answer</p>
+              <button className="btn" onClick={playAgain}>
+                Play Again
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <div className="container">

@@ -11,8 +11,30 @@ const Quiz = (props) => {
               <h6
                 key={answer.id}
                 className={`${
-                  answer.isSelected ? "isSelected" : "transparent"
+                  !props.displayResult && answer.isSelected
+                    ? "isSelected"
+                    : props.displayResult &&
+                      answer.isSelected &&
+                      props.checkAnswers
+                    ? "correct"
+                    : props.displayResult &&
+                      answer.isSelected &&
+                      !props.checkAnswers
+                    ? "wrong"
+                    : "transparent"
                 }`}
+                // style={{
+                //   backgroundColor:
+                //     answer.isSelected &&
+                //     props.checkAnswers &&
+                //     props.displayResult
+                //       ? "#94d7a2"
+                //       : answer.isSelected &&
+                //         !props.checkAnswers &&
+                //         props.displayResult
+                //       ? "#ffc0cb"
+                //       : "transparent",
+                // }}
                 onClick={() => props.handleSelect(props.id, answer.id)}
               >
                 {answer.answer}{" "}
